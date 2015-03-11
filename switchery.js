@@ -17,7 +17,8 @@
 
 var transitionize = require('transitionize')
   , fastclick = require('fastclick')
-  , classes = require('classes');
+  , classes = require('classes')
+  , Hammer = require('hammer.js');
 
 /**
  * Expose `Switchery`.
@@ -290,17 +291,31 @@ Switchery.prototype.handleClick = function() {
   if (this.isDisabled() === false) {
     fastclick(switcher);
 
+    var handler = function () {
+      self.setPosition(labelParent);
+      self.handleOnchange(self.element.checked);
+    };
+
     if (switcher.addEventListener) {
-      switcher.addEventListener('click', function(e) {
-        self.setPosition(labelParent);
-        self.handleOnchange(self.element.checked);
-      });
+      switcher.addEventListener('click', handler);
     } else {
-      switcher.attachEvent('onclick', function() {
-        self.setPosition(labelParent);
-        self.handleOnchange(self.element.checked);
-      });
+      switcher.attachEvent('onclick', handler);
     }
+
+    // Swipe handling (with Hammer.js)
+    var mc = new Hammer.Manager(switcher);
+    mc.add(new Hammer.Swipe({velocity: 0, threshold: 0}));
+    mc.on('swipeleft swiperight', function (e) {
+      if (e.direction == Hammer.DIRECTION_LEFT) { // Swipe left
+        if (self.isChecked()) {
+          handler();
+        }
+      } else {  // Swipe right
+        if (!self.isChecked()) {
+          handler();
+        }
+      }
+    });
   } else {
     this.element.disabled = true;
     this.switcher.style.opacity = this.options.disabledOpacity;

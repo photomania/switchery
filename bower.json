@@ -29,7 +29,8 @@
   ],
   "dependencies": {
     "transitionize": "*",
-    "fastclick": "v0.6.11"
+    "fastclick": "v0.6.11",
+    "hammerjs": "~2.0"
   },
   "devDependencies": {}
 }
