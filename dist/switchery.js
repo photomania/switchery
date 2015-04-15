@@ -3826,13 +3826,19 @@ Switchery.prototype.setPosition = function (clicked) {
   if (checked === true) {
     this.element.checked = true;
 
-    if (window.getComputedStyle) jack.style.left = parseInt(window.getComputedStyle(switcher).width) - parseInt(window.getComputedStyle(jack).width) + 'px';
-    else jack.style.left = parseInt(switcher.currentStyle['width']) - parseInt(jack.currentStyle['width']) + 'px';
+    if (window.getComputedStyle) {
+      jack.style.transform = 'translateX(' + (parseInt(window.getComputedStyle(switcher).width) - parseInt(window.getComputedStyle(jack).width)) + 'px)';
+      jack.style.webkitTransform = 'translateX(' + (parseInt(window.getComputedStyle(switcher).width) - parseInt(window.getComputedStyle(jack).width)) + 'px)';
+    } else {
+      jack.style.transform = 'translateX(' + (parseInt(switcher.currentStyle['width']) - parseInt(jack.currentStyle['width'])) + 'px)';
+      jack.style.webkitTransform = 'translateX(' + (parseInt(switcher.currentStyle['width']) - parseInt(jack.currentStyle['width'])) + 'px)';
+    }
 
     if (this.options.color) this.colorize();
     this.setSpeed();
   } else {
-    jack.style.left = 0;
+    jack.style.transform = 'translateX(0)';
+    jack.style.webkitTransform = 'translateX(0)';
     this.element.checked = false;
     this.switcher.style.boxShadow = 'inset 0 0 0 0 ' + this.options.secondaryColor;
     this.switcher.style.borderColor = this.options.secondaryColor;
@@ -3850,7 +3856,9 @@ Switchery.prototype.setPosition = function (clicked) {
 
 Switchery.prototype.setSpeed = function() {
   var switcherProp = {}
-    , jackProp = { 'left': this.options.speed.replace(/[a-z]/, '') / 2 + 's' };
+    , jackProp = {
+      '-webkit-transform': this.options.speed.replace(/[a-z]/, '') / 2 + 's'
+    };
 
   if (this.isChecked()) {
     switcherProp = {
