@@ -56,11 +56,11 @@ require.helper.semVerSort = function(a, b) {
 
 /**
  * Find and require a module which name starts with the provided name.
- * If multiple modules exists, the highest semver is used.
+ * If multiple modules exists, the highest semver is used. 
  * This function can only be used for remote dependencies.
 
  * @param {String} name - module name: `user~repo`
- * @param {Boolean} returnPath - returns the canonical require path if true,
+ * @param {Boolean} returnPath - returns the canonical require path if true, 
  *                               otherwise it returns the epxorted module
  */
 require.latest = function (name, returnPath) {
@@ -83,7 +83,7 @@ require.latest = function (name, returnPath) {
           semVerCandidates.push({version: version, name: moduleName});
         } else {
           otherCandidates.push({version: version, name: moduleName});
-        }
+        } 
     }
   }
   if (semVerCandidates.concat(otherCandidates).length === 0) {
@@ -3413,7 +3413,7 @@ FastClick.notNeeded = function(layer) {
 
 		if (FastClick.prototype.deviceIsAndroid) {
 			metaViewport = document.querySelector('meta[name=viewport]');
-
+			
 			if (metaViewport) {
 				// Chrome on Android with user-scalable="no" doesn't need FastClick (issue #89)
 				if (metaViewport.content.indexOf('user-scalable=no') !== -1) {
@@ -3857,11 +3857,13 @@ Switchery.prototype.setSpeed = function() {
         'border': this.options.speed
       , 'box-shadow': this.options.speed
       , 'background-color': this.options.speed.replace(/[a-z]/, '') * 3 + 's'
+      , 'opacity': this.options.speed
     };
   } else {
     switcherProp = {
         'border': this.options.speed
       , 'box-shadow': this.options.speed
+      , 'opacity': this.options.speed
     };
   }
 
@@ -3906,6 +3908,36 @@ Switchery.prototype.colorize = function() {
   this.switcher.style.borderColor = this.options.color;
   this.switcher.style.boxShadow = 'inset 0 0 0 ' + switcherHeight + 'px ' + this.options.color;
   this.jack.style.backgroundColor = this.options.jackColor;
+};
+
+/**
+ * Disable the switchery element.
+ *
+ * @api public
+ */
+
+Switchery.prototype.disable = function() {
+  if (this.isDisabled()) {
+    return;
+  }
+
+  this.element.disabled = true;
+  this.switcher.style.opacity = this.options.disabledOpacity;
+};
+
+/**
+ * Enable the Switchery element.
+ *
+ * @api public
+ */
+
+Switchery.prototype.enable = function() {
+  if (!this.isDisabled()) {
+    return;
+  }
+
+  this.element.disabled = false;
+  this.switcher.style.opacity = 1;
 };
 
 /**
@@ -3963,8 +3995,10 @@ Switchery.prototype.handleClick = function() {
     fastclick(switcher);
 
     var handler = function () {
-      self.setPosition(labelParent);
-      self.handleOnchange(self.element.checked);
+      if (!self.isDisabled()) {
+        self.setPosition(labelParent);
+        self.handleOnchange(self.element.checked);
+      }
     };
 
     if (switcher.addEventListener) {
